@@ -28,17 +28,25 @@ import random
 
 class MyTable(QTableWidget):
 	def __init__(self):
-		super(MyTable,self).__init__()
+		super(MyTable, self).__init__()
 		self.MaxCount = 10
 		self.MaxCount = 4
+
+		self.loadData()
+
+	def loadData(self):
+		self.conn = sqlite3.connect(os.path.join(os.path.dirname(__file__),'data','data.db'))
+		self.cursor = self.conn.cursor()
+
+		self.df = pd.read_sql_query(r"SELECT * FROM log", self.conn)
+
+		self.conn.close()
 
 	def updateEntry(self):
 		pass
 
 	def filterData(self, criteria=None, value=None):
-		if criteria == None and value == None:
-			#Filter based on time
-			pass
+		pass
 
 
 
