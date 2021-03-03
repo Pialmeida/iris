@@ -8,7 +8,7 @@ def train():
 
 def test(filename = None):
 	test_encoding_model_path = r'encodingModel/irisEncodings.pickle'
-	name = G6.iris_model_test(test_encoding_model_path,r'Input_Database/Juliano/Juliano_1.jpg')
+	name = G6.iris_model_test(test_encoding_model_path,r'Input_Database/Pedro Almeida/Pedro Almeida_0.jpg')
 
 	print(f'Name is {name}')
 

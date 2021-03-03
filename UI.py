@@ -1,36 +1,22 @@
-from PyQt5.QtWidgets import (QApplication, 
-	QWidget, 
-	QLabel, 
-	QPushButton, 
-	QTableWidget,
-	QTableWidgetItem, 
-	QTableView, 
-	QGridLayout,
-	QHBoxLayout,
-	QVBoxLayout,
-	QSizePolicy,
-	QSpacerItem)
+from PyQt5.QtWidgets import *
 
-from PyQt5.QtCore import (QThread, 
-	Qt, 
-	pyqtSignal, 
-	pyqtSlot, 
-	QAbstractTableModel,
-	QSize)
+from PyQt5.QtCore import *
 
-from PyQt5.QtGui import (QImage, 
-	QPixmap, 
-	QStandardItemModel)
+from PyQt5.QtGui import *
 
 import sys, time, datetime, os
-import cv2
+import cv2, PIL
 import pandas as pd
 
 import sqlite3
 import random
 
+import json
+
 from table import MyTable
 
+with open('config.json','r') as f:
+	CONFIG = json.load(f)
 
 class Thread(QThread):
 	changePixmap = pyqtSignal(QImage)
@@ -54,9 +40,9 @@ class MainWindow(QWidget):
 		self.title = 'Iris Biometric Detection'
 		self.left = 100
 		self.top = 100
-		self.width = 852
-		self.height = 480
-		self.log = pd.DataFrame()
+		self.width = CONFIG['UI']['UI_WIDTH']
+		self.height = CONFIG['UI']['UI_HEIGHT']
+
 
 		self.setupUI()
 
