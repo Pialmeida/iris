@@ -31,44 +31,58 @@ class Thread(QThread):
 				h, w, ch = rgbImage.shape
 				bytesPerLine = ch * w
 				convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
-				p = convertToQtFormat.scaled(int(CONFIG['UI']['UI_WIDTH']*0.5), int(CONFIG['UI']['UI_HEIGHT']), Qt.KeepAspectRatio)
+				p = convertToQtFormat.scaled(int(CONFIG['UI']['UI_WIDTH']*0.491), int(CONFIG['UI']['UI_HEIGHT']), Qt.KeepAspectRatio)
 				self.changePixmap.emit(p)
 
 class MainWindow(QWidget):
 	def __init__(self):
 		super(MainWindow,self).__init__()
 		self.title = 'Iris Biometric Detection'
-		self.left = 100
-		self.top = 100
+		# self.left = 100
+		# self.top = 100
 		self.width = CONFIG['UI']['UI_WIDTH']
 		self.height = CONFIG['UI']['UI_HEIGHT']
+
+		self._MAIN_WINDOW_LAYOUT = '''
+			background-color: #c5c6c7;
+		'''
+
+		self._BUTTON_LAYOUT = '''
+			QPushButton{
+				background-color: #640023;
+				border-style: outset;
+				border: 2px solid black;
+				font: bold 14px;
+				color: white;
+			}
+		'''
 
 		self.data = Data()
 
 		self.setupUI()
 
 	def setupUI(self):
+		self.setStyleSheet(self._MAIN_WINDOW_LAYOUT)
 		self.setWindowTitle(self.title)
-		self.setGeometry(self.left, self.top, self.width, self.height)
+		self.setFixedSize(self.width, self.height)
 
 
 		#Define Main Layout
 		self.layout = QHBoxLayout()
+		self.layout.setContentsMargins(5,5,5,5)
 		self.setLayout(self.layout)
 
 
 		#Left Layouts
 		self.left_layout = QVBoxLayout()
 		self.layout.addLayout(self.left_layout)
-		self.left_layout.setSpacing(1)
-		self.left_layout.addStretch()
 
 
 		#Camera Object for Live Feed
 		self.label = QLabel(self)
 		self.label.setAlignment(Qt.AlignTop)
-		self.left_layout.addWidget(self.label, int(self.height*0.75))
-		self.label.resize(int(self.width*0.5), int(self.height*0.75))
+		self.left_layout.addWidget(self.label, int(self.height*0.67))
+		self.label.resize(int(self.width*0.5), int(self.height*0.5))
 		self.label.setStyleSheet("QLabel { background-color : violet;}")
 
 		self.monitor = Thread(self)
@@ -81,17 +95,31 @@ class MainWindow(QWidget):
 
 		#Problema
 		self.label1 = QLabel()
-		self.left_layout.addWidget(self.label1,int(self.height*0.13))
+		self.left_layout.addWidget(self.label1, self.height*0.35)
 		self.label1.resize(int(self.width*0.5),int(self.height*0.2))
 		self.label1.move(int(self.width*0.05),int(self.height*0.8))
 		self.label1.setStyleSheet("QLabel { background-color : blue;}")
-		self.left_layout.addStretch()
 
+		#Layout for Button
+		self.button_layout = QHBoxLayout()
+		self.label1.setLayout(self.button_layout)
+		self.button_layout.setContentsMargins(0,0,0,0)
+
+
+		#Reclamar de Problema
+		self.button = QPushButton('NOT YOU?', self)
+		self.button_layout.addWidget(self.button, alignment=Qt.AlignRight)
+		self.button.setStyleSheet(self._BUTTON_LAYOUT)
+		self.button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+		self.button.setToolTip('Press to retry scan')
+		self.button.move(int(self.width*0.35), int(self.height*0.667))
+		self.button.resize(100, int(self.height*0.30))
+		self.button.clicked.connect(self.on_click1)
 		
 		#Right Labels
 		self.right_layout = QVBoxLayout()
 		self.layout.addLayout(self.right_layout)
-		self.left_layout.setSpacing(1)
+		self.left_layout.addSpacing(1)
 
 		#Image
 		self.label2 = QLabel(self)
@@ -102,7 +130,7 @@ class MainWindow(QWidget):
 		self.label2.setText('IMAGE')
 
 		#Spacing
-		self.right_layout.addStretch(4)
+		self.right_layout.addSpacing(4)
 
 		#Name
 		self.label3 = QLabel(self)
@@ -113,7 +141,7 @@ class MainWindow(QWidget):
 		self.label3.setText('NAME')
 
 		#Spacing
-		self.right_layout.addStretch(2)
+		self.right_layout.addSpacing(2)
 
 		#Time
 		self.label4 = QLabel(self)
@@ -124,7 +152,7 @@ class MainWindow(QWidget):
 		self.label4.setText('TIME')
 
 		#Spacing
-		self.right_layout.addStretch(2)
+		self.right_layout.addSpacing(2)
 
 		#Entry
 		self.label5 = QLabel(self)
@@ -135,7 +163,7 @@ class MainWindow(QWidget):
 		self.label5.setText('STATUS')
 
 		#Spacing
-		self.right_layout.addStretch(4)
+		self.right_layout.addSpacing(4)
 
 		#Entry
 		self.label6 = QLabel(self)
@@ -145,10 +173,15 @@ class MainWindow(QWidget):
 		self.label6.setStyleSheet("QLabel { background-color : gray;}")
 		self.label6.setText('LOGO')
 
-		self.show() 
+		self.show()
+
+	def reset_style(self):
+		self.button.setStyleSheet(self._BUTTON_LAYOUT)
 
 	def on_click1(self):
-		print('test')
+		self.reset_style()
+
+		print('Restart Scan')
 
 	def on_click2(self):
 		print('test')
@@ -174,9 +207,9 @@ class MainWindow(QWidget):
 	def updateTable(self):
 		print('Updating table')
 
+
 	@pyqtSlot(QImage)
 	def setImage(self, image):
-		print(image.size())
 		self.label.setPixmap(QPixmap.fromImage(image))
 
 	def closeEvent(self, event):
